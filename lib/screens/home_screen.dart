@@ -25,43 +25,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
   }
 
-  void _showTaskDialog({Task? taskToEdit}) {
-    final boardState = ref.read(boardProvider);
+  void _showTaskDialog() {
     showDialog(
       context: context,
       builder: (dialogContext) {
-        return TaskDialog(
-          taskToEdit: taskToEdit,
-          onSave: (title, description, status, originalTask) async {
-            final boardNotifier = ref.read(boardProvider.notifier);
-            if (originalTask != null) {
-              final updatedTask = originalTask.copyWith(
-                title: title,
-                description: description,
-                status: status,
-              );
-              await boardNotifier.updateTask(updatedTask);
-              _notification(
-                message:
-                    boardState.errorMessage == null
-                        ? 'Tarea "${updatedTask.title}" actualizada.'
-                        : boardState.errorMessage!,
-                color:
-                    boardState.errorMessage == null ? Colors.green : Colors.red,
-              );
-            } else {
-              await boardNotifier.addTask(title, description);
-              _notification(
-                message:
-                    boardState.errorMessage == null
-                        ? 'Tarea "$title" creada.'
-                        : boardState.errorMessage!,
-                color:
-                    boardState.errorMessage == null ? Colors.green : Colors.red,
-              );
-            }
-          },
-        );
+        return TaskDialog();
       },
     );
   }
@@ -225,7 +193,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             item: TaskCard(
               task: task,
               backgroundColor: cardBgColor,
-              onTap: () => _showTaskDialog(taskToEdit: task),
+              onTap: () => context.push('/task-detail', extra: task),
+              // onTap: () => _showTaskDialog(taskToEdit: task),
               onDelete: () async {
                 final boardState = ref.watch(boardProvider);
                 final confirm = await showDialog<bool>(
@@ -314,17 +283,5 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
     );
-  }
-
-  void _notification({required Color color, required String message}) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: color,
-          duration: const Duration(seconds: 2),
-        ),
-      );
   }
 }

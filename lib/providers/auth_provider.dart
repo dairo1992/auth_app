@@ -40,7 +40,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     String email,
     String password,
   ) async {
-    state = state.copyWith(isLoading: true, errorMessage: null);
+    state = state.copyWith(isLoading: true, errorMessage: null, isAuthenticated: false);
     try {
       final AuthResponse response = await _supabase.auth.signUp(
         email: email,
@@ -57,12 +57,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(
         isLoading: false,
         errorMessage: 'Error en la autenticación: ${e.message}',
+        isAuthenticated: false
       );
     }
   }
 
   Future<void> login(String email, String password) async {
-    state = state.copyWith(isLoading: true, errorMessage: null);
+    state = state.copyWith(isLoading: true, errorMessage: null, isAuthenticated: false);
 
     try {
       final AuthResponse response = await _supabase.auth.signInWithPassword(
@@ -78,6 +79,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(
         isLoading: false,
         errorMessage: 'Error en la autenticación: ${e.message}',
+        isAuthenticated: false
       );
     }
   }

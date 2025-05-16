@@ -131,10 +131,10 @@ class _LoginFormState extends ConsumerState<_RegisterForm> {
     return null;
   }
 
-  void _submitForm() async {
+  void _submitForm() {
     final authState = ref.watch(authProvider);
     if (_formKey.currentState!.validate()) {
-      await ref
+      ref
           .read(authProvider.notifier)
           .register(
             _nameController.text,
@@ -142,34 +142,37 @@ class _LoginFormState extends ConsumerState<_RegisterForm> {
             _emailController.text,
             _passwordController.text,
           );
-
-      _notification(
-        color: authState.errorMessage == null ? Colors.green : Colors.red,
-        message:
-            authState.errorMessage == null
-                ? "Bienvenid@ ${authState.user?.userMetadata?['name']?.toString()}"
-                : authState.errorMessage!,
-        status: authState.errorMessage == null,
-      );
     }
-  }
-
-  void _notification({
-    required Color color,
-    required String message,
-    bool status = false,
-  }) {
-    if (status) {
-      context.push('/home');
-    }
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(message), backgroundColor: color));
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
+
+    if (authState.errorMessage != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(authState.errorMessage!),
+            backgroundColor: Colors.red,
+          ),
+        );
+      });
+    }
+    if (authState.isAuthenticated) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '¡Bienvenido ${authState.user?.userMetadata?['name']}!',
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+        context.go('/home');
+      });
+    }
+
     return Form(
       key: _formKey,
       child: Column(

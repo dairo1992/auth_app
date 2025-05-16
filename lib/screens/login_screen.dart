@@ -104,39 +104,40 @@ class _LoginFormState extends ConsumerState<_LoginForm> {
     return null;
   }
 
-  void _submitForm() async {
-    final authState = ref.watch(authProvider);
+  void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      await ref
+      ref
           .read(authProvider.notifier)
           .login(_emailController.text, _passwordController.text);
     }
-    _notification(
-      color: authState.errorMessage == null ? Colors.green : Colors.red,
-      message:
-          authState.errorMessage == null
-              ? "Bienvenid@ ${authState.user?.userMetadata?['name']?.toString()}"
-              : authState.errorMessage!,
-      status: authState.errorMessage == null,
-    );
-  }
-
-  void _notification({
-    required Color color,
-    required String message,
-    bool status = false,
-  }) {
-    if (status) {
-      context.go('/home');
-    }
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(message), backgroundColor: color));
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
+    if (authState.errorMessage != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(authState.errorMessage!),
+            backgroundColor: Colors.red,
+          ),
+        );
+      });
+    }
+    if (authState.isAuthenticated) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '¡Bienvenido ${authState.user?.userMetadata?['name']}!',
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+        context.go('/home');
+      });
+    }
     return Form(
       key: _formKey,
       child: Column(

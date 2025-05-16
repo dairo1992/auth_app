@@ -1,24 +1,63 @@
+enum TaskStatus { pending, inProgress, done }
+
 class Task {
   final String id;
   final String title;
   final String description;
-  final DateTime createdAt;
+  final TaskStatus status;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final String userId;
 
   Task({
     required this.id,
     required this.title,
     required this.description,
+    this.status = TaskStatus.pending,
     required this.createdAt,
+    required this.updatedAt,
+    required this.userId,
   });
 
-  Task copyWith({String? title, String? description}) {
-    return Task(
-      id: id,
-      title: title ?? this.title,
-      description: description ?? this.description,
-      createdAt: createdAt,
-    );
-  }
-}
+  Task copyWith({
+    String? id,
+    String? title,
+    String? description,
+    TaskStatus? status,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? userId,
+  }) => Task(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    description: description ?? this.description,
+    status: status ?? this.status,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    userId: userId ?? this.userId,
+  );
 
-enum TaskStatus { pending, inProgress, done }
+  factory Task.fromJson(Map<String, dynamic> json) => Task(
+    id: json["id"],
+    title: json["title"],
+    description: json["description"],
+    status: TaskStatus.values.firstWhere((e) => e.name == json["status"]),
+    createdAt:
+    // json["createdAt"] != null
+    DateTime.parse(json["created_at"]),
+    // : DateTime.now(),
+    updatedAt:
+        json["updated_at"] != null ? DateTime.parse(json["updated_at"]) : null,
+    userId: json["user_id"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "title": title,
+    "description": description,
+    "status": status,
+    "createdAt": createdAt,
+    "updatedAt": updatedAt,
+    "user_id": userId,
+  };
+}

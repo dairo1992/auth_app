@@ -47,7 +47,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
         password: password,
         data: {'name': name, 'last_name': lastName},
       );
-      final Session? session = response.session;
       final User? user = response.user;
       state = state.copyWith(
         isLoading: false,
@@ -75,25 +74,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isAuthenticated: true,
         user: response.user,
       );
-
-      // if (email == 'user@example.com' && password == 'password') {
-      //   state = state.copyWith(isLoading: false, isAuthenticated: true);
-      // } else {
-      //   state = state.copyWith(
-      //     isLoading: false,
-      //     errorMessage: 'Credenciales inválidas',
-      //   );
-      // }
     } on AuthException catch (e) {
       state = state.copyWith(
         isLoading: false,
         errorMessage: 'Error en la autenticación: ${e.message}',
       );
     }
-  }
-
-  void resetError() {
-    state = state.copyWith(errorMessage: null);
   }
 
   Future<void> logout() async {
@@ -104,21 +90,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       errorMessage: null,
       isLoading: false,
     );
-  }
-
-  Future<bool> resetPassword(String email) async {
-    try {
-      state = state.copyWith(isLoading: true, errorMessage: null);
-      await _supabase.auth.resetPasswordForEmail(email);
-      state = state.copyWith(isLoading: false, errorMessage: null);
-      return true;
-    } on AuthException catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.message);
-      return false;
-    } catch (e) {
-      state = state.copyWith(isLoading: true, errorMessage: e.toString());
-      return false;
-    }
   }
 }
 

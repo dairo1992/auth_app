@@ -1,8 +1,7 @@
 import 'package:auth_app/interfaces/task_interface.dart';
 import 'package:auth_app/providers/auth_provider.dart';
 import 'package:auth_app/providers/kanban_provider.dart';
-import 'package:auth_app/widgets/taskCard.dart';
-import 'package:auth_app/widgets/task_dialog.dart';
+import 'package:auth_app/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boardview/board_item.dart';
 import 'package:flutter_boardview/board_list.dart';
@@ -21,8 +20,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final BoardViewController _boardViewController = BoardViewController();
 
-  // Los TextEditingControllers ahora están dentro de TaskDialog
-
   @override
   void initState() {
     super.initState();
@@ -38,39 +35,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           onSave: (title, description, status, originalTask) async {
             final boardNotifier = ref.read(boardProvider.notifier);
             if (originalTask != null) {
-              // Editando
               final updatedTask = originalTask.copyWith(
                 title: title,
                 description: description,
                 status: status,
               );
-              boardNotifier.updateTask(updatedTask);
-              ScaffoldMessenger.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    content: Text('Tarea "${updatedTask.title}" actualizada.'),
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
+              await boardNotifier.updateTask(updatedTask);
+              _notification(
+                message:
+                    boardState.errorMessage == null
+                        ? 'Tarea "${updatedTask.title}" actualizada.'
+                        : boardState.errorMessage!,
+                color:
+                    boardState.errorMessage == null ? Colors.green : Colors.red,
+              );
             } else {
               await boardNotifier.addTask(title, description);
-              ScaffoldMessenger.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      boardState.errorMessage == null
-                          ? 'Tarea "$title" creada.'
-                          : boardState.errorMessage!,
-                    ),
-                    duration: const Duration(seconds: 2),
-                    backgroundColor:
-                        boardState.errorMessage == null
-                            ? Colors.green
-                            : Colors.red,
-                  ),
-                );
+              _notification(
+                message:
+                    boardState.errorMessage == null
+                        ? 'Tarea "$title" creada.'
+                        : boardState.errorMessage!,
+                color:
+                    boardState.errorMessage == null ? Colors.green : Colors.red,
+              );
             }
           },
         );
@@ -92,7 +80,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final doneTasks =
         boardState.tasks.where((t) => t.status == TaskStatus.done).toList();
 
-    // Colores base para las columnas
     final pendingColors = {
       'header': Colors.orange.shade700,
       'bg': Colors.orange.shade50,
@@ -204,9 +191,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           boardViewController: _boardViewController,
           dragDelay: 150,
           width:
-              MediaQuery.of(context).size.width * 0.85 < 320
-                  ? MediaQuery.of(context).size.width * 0.85
-                  : 320,
+              MediaQuery.of(context).size.width * 0.33 < 320
+                  ? 300
+                  : MediaQuery.of(context).size.width * 0.33,
         ),
       ),
     );
@@ -240,6 +227,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               backgroundColor: cardBgColor,
               onTap: () => _showTaskDialog(taskToEdit: task),
               onDelete: () async {
+                final boardState = ref.watch(boardProvider);
                 final confirm = await showDialog<bool>(
                   context: context,
                   builder:
@@ -266,12 +254,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                 );
                 if (confirm == true) {
-                  ref.read(boardProvider.notifier).deleteTask(task.id);
+                  await ref.read(boardProvider.notifier).deleteTask(task.id);
                   ScaffoldMessenger.of(context)
                     ..hideCurrentSnackBar()
                     ..showSnackBar(
                       SnackBar(
-                        content: Text('Tarea "${task.title}" eliminada.'),
+                        content: Text(
+                          boardState.errorMessage == null
+                              ? 'Tarea "${task.title}" eliminada.'
+                              : boardState.errorMessage!,
+                        ),
+                        backgroundColor:
+                            boardState.errorMessage == null
+                                ? Colors.green
+                                : Colors.red,
                         duration: const Duration(seconds: 2),
                       ),
                     );
@@ -318,5 +314,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
     );
+  }
+
+  void _notification({required Color color, required String message}) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: color,
+          duration: const Duration(seconds: 2),
+        ),
+      );
   }
 }

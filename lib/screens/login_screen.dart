@@ -1,6 +1,5 @@
 import 'package:auth_app/providers/auth_provider.dart';
 import 'package:auth_app/widgets/widgets.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -20,7 +19,11 @@ class LoginScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Icon(Icons.lock, size: 80, color: Color(0xFF6200EE)),
+                  const Icon(
+                    Icons.login_outlined,
+                    size: 80,
+                    color: Color(0xFF6200EE),
+                  ),
                   const SizedBox(height: 32),
                   const Text(
                     'Bienvenido de nuevo',
@@ -101,41 +104,39 @@ class _LoginFormState extends ConsumerState<_LoginForm> {
     return null;
   }
 
-  void _submitForm() {
+  void _submitForm() async {
+    final authState = ref.watch(authProvider);
     if (_formKey.currentState!.validate()) {
-      ref
+      await ref
           .read(authProvider.notifier)
           .login(_emailController.text, _passwordController.text);
     }
+    _notification(
+      color: authState.errorMessage == null ? Colors.green : Colors.red,
+      message:
+          authState.errorMessage == null
+              ? "Bienvenid@ ${authState.user?.userMetadata?['name']?.toString()}"
+              : authState.errorMessage!,
+      status: authState.errorMessage == null,
+    );
+  }
+
+  void _notification({
+    required Color color,
+    required String message,
+    bool status = false,
+  }) {
+    if (status) {
+      context.go('/home');
+    }
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message), backgroundColor: color));
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
-    if (authState.errorMessage != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(authState.errorMessage!),
-            backgroundColor: Colors.red,
-          ),
-        );
-        ref.read(authProvider.notifier).resetError();
-      });
-    }
-
-    if (authState.isAuthenticated) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('¡Inicio de sesión exitoso!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        context.go('/home');
-      });
-    }
-
     return Form(
       key: _formKey,
       child: Column(
@@ -155,17 +156,6 @@ class _LoginFormState extends ConsumerState<_LoginForm> {
             controller: _passwordController,
             validator: _validatePassword,
           ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () => _showForgotPasswordModal(context, ref),
-              child: const Text(
-                '¿Olvidaste tu contraseña?',
-                style: TextStyle(fontSize: 14),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
           CustomButton(
             text: 'Iniciar sesión',
             onPressed: _submitForm,
@@ -175,84 +165,4 @@ class _LoginFormState extends ConsumerState<_LoginForm> {
       ),
     );
   }
-}
-
-void _showForgotPasswordModal(BuildContext context, WidgetRef ref) {
-  final forgotPasswordEmailController = TextEditingController();
-  final authState = ref.watch(authProvider);
-  if (authState.errorMessage != null) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(authState.errorMessage!),
-          backgroundColor: Colors.red,
-        ),
-      );
-      ref.read(authProvider.notifier).resetError();
-    });
-  }
-  showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    builder: (context) {
-      final authState = ref.watch(authProvider);
-      return Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 16.0,
-          right: 16.0,
-          top: 16.0,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Text(
-              'Restablecer Contraseña',
-              style: Theme.of(context).textTheme.headlineSmall,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20.0),
-            TextField(
-              controller: forgotPasswordEmailController,
-              decoration: const InputDecoration(
-                labelText: 'Ingresa tu correo electrónico',
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () async {
-                if (!authState.isLoading) {
-                  final resp = await ref
-                      .read(authProvider.notifier)
-                      .resetPassword(forgotPasswordEmailController.text.trim());
-                  if (resp) {
-                    context.pop();
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            "Se ha enviado un enlace de restablecimiento a ${forgotPasswordEmailController.text}",
-                          ),
-                          backgroundColor: Colors.white,
-                        ),
-                      );
-                      ref.read(authProvider.notifier).resetError();
-                    });
-                  }
-                }
-              },
-              child:
-                  authState.isLoading
-                      ? const CircularProgressIndicator()
-                      : const Text('Enviar enlace de restablecimiento'),
-            ),
-            const SizedBox(height: 16.0),
-          ],
-        ),
-      );
-    },
-  );
 }

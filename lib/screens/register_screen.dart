@@ -19,7 +19,11 @@ class RegisterScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Icon(Icons.lock, size: 80, color: Color(0xFF6200EE)),
+                  const Icon(
+                    Icons.person_add_alt_rounded,
+                    size: 80,
+                    color: Color(0xFF6200EE),
+                  ),
                   const SizedBox(height: 32),
                   const Text(
                     'Registrate',
@@ -127,46 +131,45 @@ class _LoginFormState extends ConsumerState<_RegisterForm> {
     return null;
   }
 
-  void _submitForm() {
+  void _submitForm() async {
+    final authState = ref.watch(authProvider);
     if (_formKey.currentState!.validate()) {
-      ref
+      await ref
           .read(authProvider.notifier)
           .register(
             _nameController.text,
             _lastNameController.text,
             _emailController.text,
-            _passwordController.text
+            _passwordController.text,
           );
+
+      _notification(
+        color: authState.errorMessage == null ? Colors.green : Colors.red,
+        message:
+            authState.errorMessage == null
+                ? "Bienvenid@ ${authState.user?.userMetadata?['name']?.toString()}"
+                : authState.errorMessage!,
+        status: authState.errorMessage == null,
+      );
     }
+  }
+
+  void _notification({
+    required Color color,
+    required String message,
+    bool status = false,
+  }) {
+    if (status) {
+      context.push('/home');
+    }
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message), backgroundColor: color));
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
-    if (authState.errorMessage != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(authState.errorMessage!),
-            backgroundColor: Colors.red,
-          ),
-        );
-        ref.read(authProvider.notifier).resetError();
-      });
-    }
-
-    if (authState.isAuthenticated) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('¡Inicio de sesión exitoso!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        context.push('/');
-      });
-    }
-
     return Form(
       key: _formKey,
       child: Column(

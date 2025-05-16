@@ -17,12 +17,10 @@ class KanbanState {
     bool? isLoading,
     String? errorMessage,
     List<Task>? tasks,
-    bool? clearErrorMessage,
   }) {
     return KanbanState(
       isLoading: isLoading ?? this.isLoading,
-      errorMessage:
-          clearErrorMessage == true ? null : errorMessage ?? this.errorMessage,
+      errorMessage: errorMessage ?? this.errorMessage,
       tasks: tasks ?? this.tasks,
     );
   }
@@ -59,7 +57,7 @@ class BoardNotifier extends StateNotifier<KanbanState> {
   }
 
   Future<void> fetchTasks() async {
-    state = state.copyWith(isLoading: true, clearErrorMessage: true, tasks: []);
+    state = state.copyWith(isLoading: true, tasks: []);
     try {
       final response = await _supabase
           .from('tasks')
@@ -80,7 +78,7 @@ class BoardNotifier extends StateNotifier<KanbanState> {
   }
 
   Future<void> addTask(String title, String? description) async {
-    state = state.copyWith(isLoading: true, clearErrorMessage: true);
+    state = state.copyWith(isLoading: true);
     try {
       final newTask = {
         "title": title,
@@ -100,28 +98,48 @@ class BoardNotifier extends StateNotifier<KanbanState> {
   }
 
   Future<void> updateTask(Task taskToUpdate) async {
-    state = state.copyWith(isLoading: true, clearErrorMessage: true);
+    state = state.copyWith(isLoading: true);
     try {
       await _supabase
           .from('tasks')
           .update({
             'title': taskToUpdate.title,
             'description': taskToUpdate.description,
+            'status': taskToUpdate.status.name,
             'updated_at': DateTime.now().toIso8601String(),
           })
           .eq('id', taskToUpdate.id);
-      state = state.copyWith(isLoading: true, clearErrorMessage: true);
+      final taskUpdate = taskToUpdate.copyWith(updatedAt: DateTime.now());
+      final tasksList =
+          state.tasks.map((task) {
+            if (task.id == taskUpdate.id) {
+              return taskUpdate;
+            }
+            return task;
+          }).toList();
+      state = state.copyWith(
+        tasks: tasksList,
+        isLoading: false,
+        errorMessage: null,
+      );
     } on PostgrestException catch (e) {
       state = state.copyWith(errorMessage: e.message, isLoading: false);
     }
   }
 
   Future<void> updateTaskStatus(String taskId, TaskStatus newStatus) async {
+    state = state.copyWith(isLoading: true);
     final taskIndex = state.tasks.indexWhere((t) => t.id == taskId);
-    if (taskIndex == -1) return;
+    if (taskIndex == -1) {
+      state = state.copyWith(isLoading: false);
+      return;
+    }
 
     final task = state.tasks[taskIndex];
-    if (task.status == newStatus) return;
+    if (task.status == newStatus) {
+      state = state.copyWith(isLoading: false);
+      return;
+    }
 
     final updatedTask = task.copyWith(
       status: newStatus,
@@ -140,10 +158,9 @@ class BoardNotifier extends StateNotifier<KanbanState> {
           .eq('id', taskId);
       state = state.copyWith(
         tasks: newTasks,
-        isLoading: true,
-        clearErrorMessage: true,
+        isLoading: false,
+        errorMessage: null,
       );
-      state = state.copyWith(isLoading: false);
     } on PostgrestException catch (e) {
       state = state.copyWith(
         tasks: originalTasks,

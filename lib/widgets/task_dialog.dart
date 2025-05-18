@@ -8,7 +8,7 @@ class TaskDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     final TextEditingController titleController = TextEditingController();
     final TextEditingController descriptionController = TextEditingController();
     final boardState = ref.watch(boardProvider);
@@ -17,7 +17,7 @@ class TaskDialog extends ConsumerWidget {
       content: SizedBox(
         width: MediaQuery.of(context).size.width * 0.5,
         child: Form(
-          key: _formKey,
+          key: formKey,
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -48,6 +48,12 @@ class TaskDialog extends ConsumerWidget {
                   ),
                   maxLines: 3,
                   textInputAction: TextInputAction.done,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Este campo no puede estar vacío.';
+                    }
+                    return null;
+                  },
                 ),
               ],
             ),
@@ -61,26 +67,28 @@ class TaskDialog extends ConsumerWidget {
         ),
         ElevatedButton(
           onPressed: () async {
-            await ref
-                .read(boardProvider.notifier)
-                .addTask(titleController.text, descriptionController.text);
+            if (formKey.currentState!.validate()) {
+              await ref
+                  .read(boardProvider.notifier)
+                  .addTask(titleController.text, descriptionController.text);
 
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(
-                  content: Text(
-                    boardState.errorMessage == null
-                        ? "Tarea Registrada"
-                        : boardState.errorMessage!,
-                  ),
-                  backgroundColor:
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Text(
                       boardState.errorMessage == null
-                          ? Colors.green
-                          : Colors.red,
-                ),
-              );
+                          ? "Tarea Registrada"
+                          : boardState.errorMessage!,
+                    ),
+                    backgroundColor:
+                        boardState.errorMessage == null
+                            ? Colors.green
+                            : Colors.red,
+                  ),
+                );
               context.pop();
+            }
           },
           child: Text('Crear Tarea'),
         ),

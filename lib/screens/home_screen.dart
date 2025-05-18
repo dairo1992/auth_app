@@ -36,6 +36,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    
     final authState = ref.watch(authProvider);
     final boardState = ref.watch(boardProvider);
 

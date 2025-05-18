@@ -19,7 +19,11 @@ class RegisterScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Icon(Icons.lock, size: 80, color: Color(0xFF6200EE)),
+                  const Icon(
+                    Icons.person_add_alt_rounded,
+                    size: 80,
+                    color: Color(0xFF6200EE),
+                  ),
                   const SizedBox(height: 32),
                   const Text(
                     'Registrate',
@@ -128,6 +132,7 @@ class _LoginFormState extends ConsumerState<_RegisterForm> {
   }
 
   void _submitForm() {
+    final authState = ref.watch(authProvider);
     if (_formKey.currentState!.validate()) {
       ref
           .read(authProvider.notifier)
@@ -135,7 +140,7 @@ class _LoginFormState extends ConsumerState<_RegisterForm> {
             _nameController.text,
             _lastNameController.text,
             _emailController.text,
-            _passwordController.text
+            _passwordController.text,
           );
     }
   }
@@ -143,6 +148,7 @@ class _LoginFormState extends ConsumerState<_RegisterForm> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
+
     if (authState.errorMessage != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -151,19 +157,19 @@ class _LoginFormState extends ConsumerState<_RegisterForm> {
             backgroundColor: Colors.red,
           ),
         );
-        ref.read(authProvider.notifier).resetError();
       });
     }
-
     if (authState.isAuthenticated) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('¡Inicio de sesión exitoso!'),
+          SnackBar(
+            content: Text(
+              '¡Bienvenido ${authState.user?.userMetadata?['name']}!',
+            ),
             backgroundColor: Colors.green,
           ),
         );
-        context.push('/');
+        context.go('/home');
       });
     }
 

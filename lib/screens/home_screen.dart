@@ -93,7 +93,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ];
 
     return Scaffold(
+      backgroundColor: Colors.grey.shade300,
       appBar: AppBar(
+        backgroundColor: Colors.grey.shade300,
         title: Text(
           'Kanban de ${authState.user?.userMetadata?['name']?.toString() ?? 'Usuario'}',
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),

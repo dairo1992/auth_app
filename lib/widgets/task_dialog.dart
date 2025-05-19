@@ -24,68 +24,70 @@ class TaskDialog extends ConsumerWidget {
       context.pop();
     }
 
-    return AlertDialog(
-      title: Text('Nueva Tarea'),
-      content: Form(
-        key: formKey,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              TextFormField(
-                controller: titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Título',
-                  hintText: 'Título de la tarea',
-                  border: OutlineInputBorder(),
+    return SingleChildScrollView(
+      child: AlertDialog(
+        title: Text('Nueva Tarea'),
+        content: Form(
+          key: formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                TextFormField(
+                  controller: titleController,
+                  decoration: const InputDecoration(
+                    labelText: 'Título',
+                    hintText: 'Título de la tarea',
+                    border: OutlineInputBorder(),
+                  ),
+                  autofocus: true,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'El título no puede estar vacío.';
+                    }
+                    return null;
+                  },
                 ),
-                autofocus: true,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'El título no puede estar vacío.';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Descripción (Opcional)',
-                  hintText: 'Descripción detallada...',
-                  border: OutlineInputBorder(),
-                  alignLabelWithHint: true,
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(
+                    labelText: 'Descripción (Opcional)',
+                    hintText: 'Descripción detallada...',
+                    border: OutlineInputBorder(),
+                    alignLabelWithHint: true,
+                  ),
+                  maxLines: 3,
+                  textInputAction: TextInputAction.done,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Este campo no puede estar vacío.';
+                    }
+                    return null;
+                  },
                 ),
-                maxLines: 3,
-                textInputAction: TextInputAction.done,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Este campo no puede estar vacío.';
-                  }
-                  return null;
-                },
-              ),
-            ],
+              ],
+            ),
           ),
         ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (formKey.currentState!.validate()) {
+                final resp = await ref
+                    .read(boardProvider.notifier)
+                    .addTask(titleController.text, descriptionController.text);
+                showMessage(resp['message'], resp['status']);
+              }
+            },
+            child: Text('Crear Tarea'),
+          ),
+        ],
       ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancelar'),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            if (formKey.currentState!.validate()) {
-              final resp = await ref
-                  .read(boardProvider.notifier)
-                  .addTask(titleController.text, descriptionController.text);
-              showMessage(resp['message'], resp['status']);
-            }
-          },
-          child: Text('Crear Tarea'),
-        ),
-      ],
     );
   }
 }

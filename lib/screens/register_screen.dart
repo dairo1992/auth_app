@@ -1,8 +1,9 @@
-import 'package:auth_app/providers/auth_provider.dart';
-import 'package:auth_app/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kanban_board_app/providers/auth_provider.dart';
+import 'package:kanban_board_app/widgets/custom_button.dart';
+import 'package:kanban_board_app/widgets/custom_textField.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});

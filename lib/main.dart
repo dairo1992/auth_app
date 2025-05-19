@@ -1,10 +1,9 @@
 import 'dart:io';
-
-import 'package:auth_app/config/custom_theme.dart';
-import 'package:auth_app/config/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kanban_board_app/config/custom_theme.dart';
+import 'package:kanban_board_app/config/routes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {

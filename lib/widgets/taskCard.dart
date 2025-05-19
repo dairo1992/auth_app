@@ -1,5 +1,5 @@
-import 'package:auth_app/interfaces/task_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:kanban_board_app/interfaces/task_interface.dart';
 
 class TaskCard extends StatelessWidget {
   final Task task;

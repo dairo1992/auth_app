@@ -1,5 +1,6 @@
-import 'package:auth_app/interfaces/task_interface.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kanban_board_app/interfaces/task_interface.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class KanbanState {

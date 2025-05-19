@@ -1,5 +1,5 @@
-name: auth_app
-description: "A new Flutter project."
+name: kanban_board_app
+description: "App Movil "
 publish_to: 'none'
 version: 0.1.0
 
@@ -14,7 +14,6 @@ dependencies:
   flutter_riverpod: ^2.6.1
   go_router: ^15.1.2
   intl: ^0.20.2
-  rename_app: ^1.6.3
   supabase_flutter: ^2.9.0
 
 dev_dependencies:

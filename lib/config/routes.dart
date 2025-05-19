@@ -1,7 +1,8 @@
-import 'package:auth_app/interfaces/task_interface.dart';
-import 'package:auth_app/screens/screens.dart';
 
 import 'package:go_router/go_router.dart';
+import 'package:kanban_board_app/interfaces/task_interface.dart';
+import 'package:kanban_board_app/screens/screens.dart';
+
 
 final routes = GoRouter(
   routes: [

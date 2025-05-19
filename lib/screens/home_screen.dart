@@ -39,8 +39,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final boardState = ref.watch(boardProvider);
-    final connectivityAsyncValue = ref.watch(connectivityProvider);
-
+    
     final todoTasks =
         boardState.tasks.where((t) => t.status == TaskStatus.pending).toList();
     final inProgressTasks =
@@ -100,27 +99,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
         ),
         centerTitle: true,
-        // leading: connectivityAsyncValue.when(
-        //   data: (data) {
-        //     if (data == ConnectivityResult.none) {
-        //       return Icon(Icons.wifi_1_bar_rounded, color: Colors.green);
-        //     } else {
-        //       return Icon(Icons.wifi_1_bar_rounded, color: Colors.red);
-        //     }
-        //   },
-        //   error: (error, stackTrace) => const Icon(Icons.wifi_off_rounded),
-        //   loading:
-        //       () => Padding(
-        //         padding: EdgeInsets.only(right: 12.0),
-        //         child: Center(
-        //           child: SizedBox(
-        //             width: 20,
-        //             height: 20,
-        //             child: CircularProgressIndicator(strokeWidth: 2.5),
-        //           ),
-        //         ),
-        //       ),
-        // ),
         leading: Icon(
           Icons.wifi_1_bar_rounded,
           color: boardState.isOnline ? Colors.green : Colors.red,

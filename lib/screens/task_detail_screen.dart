@@ -138,6 +138,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                                 title: _titleController.text,
                                 description: _descriptionController.text,
                                 userId: widget.task.userId,
+                                status: selectedStatus,
                               ),
                             );
 

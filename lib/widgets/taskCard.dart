@@ -37,7 +37,7 @@ class TaskCard extends StatelessWidget {
                       ? Icons.incomplete_circle
                       : Icons.check_box_outlined,
                   size: 100,
-                  color: Colors.black.withValues(alpha: 0.1),
+                  color: Colors.black.withValues(alpha: 0.05),
                 ),
               ),
               Column(
@@ -50,7 +50,7 @@ class TaskCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          task.title,
+                          task.title.toUpperCase(),
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
@@ -77,7 +77,7 @@ class TaskCard extends StatelessWidget {
                     const SizedBox(height: 5),
                     Text(
                       task.description,
-                      style: TextStyle(fontSize: 13),
+                      style: TextStyle(fontSize: 14),
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),

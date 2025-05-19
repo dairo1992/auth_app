@@ -14,8 +14,8 @@ class Task {
     required this.title,
     required this.description,
     this.status = TaskStatus.pending,
-    required this.createdAt,
-    required this.updatedAt,
+    this.createdAt,
+    this.updatedAt,
     required this.userId,
   });
 
@@ -51,13 +51,16 @@ class Task {
     userId: json["user_id"],
   );
 
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "title": title,
-    "description": description,
-    "status": status,
-    "createdAt": createdAt,
-    "updatedAt": updatedAt,
-    "user_id": userId,
-  };
+  
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'status': status.name, // Convertir el enum a String usando .name
+      'user_id': userId,
+      'created_at': createdAt?.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
+    };
+  }
 }

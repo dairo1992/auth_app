@@ -1,49 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:auth_app/interfaces/offiline_interface.dart';
 import 'package:auth_app/interfaces/task_interface.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
-
-// Enumeración para las operaciones pendientes
-enum PendingOperationType { add, update, updateStatus, delete }
-
-// Clase para representar operaciones pendientes
-class PendingOperation {
-  final String id;
-  final PendingOperationType type;
-  final Map<String, dynamic> data;
-  final DateTime timestamp;
-
-  PendingOperation({
-    required this.id,
-    required this.type,
-    required this.data,
-    required this.timestamp,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'type': type.toString(),
-      'data': data,
-      'timestamp': timestamp.toIso8601String(),
-    };
-  }
-
-  factory PendingOperation.fromJson(Map<String, dynamic> json) {
-    return PendingOperation(
-      id: json['id'],
-      type: PendingOperationType.values.firstWhere(
-        (e) => e.toString() == json['type'],
-      ),
-      data: json['data'],
-      timestamp: DateTime.parse(json['timestamp']),
-    );
-  }
-}
 
 class KanbanState {
   final bool isLoading;
@@ -94,10 +57,9 @@ class BoardNotifier extends StateNotifier<KanbanState> {
   }
 
   Future<void> _initializeOfflineSupport() async {
-    // Inicializar shared preferences
     _prefs = await SharedPreferences.getInstance();
 
-    // Configurar monitoreo de conectividad
+    // monitoreo de conectividad en tiempo real
     _connectivitySubscription = _connectivity.onConnectivityChanged.listen(
       _updateConnectionStatus,
     );

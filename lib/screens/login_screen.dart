@@ -1,15 +1,18 @@
 import 'package:auth_app/providers/auth_provider.dart';
+import 'package:auth_app/providers/network_provider.dart';
 import 'package:auth_app/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final connectivity = ref.watch(connectivityProvider);
     return Scaffold(
+      appBar: AppBar(title: Text('status: ${connectivity.isConnected}')),
       body: Center(
         child: SingleChildScrollView(
           child: SafeArea(

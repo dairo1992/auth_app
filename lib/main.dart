@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:auth_app/config/custom_theme.dart';
 import 'package:auth_app/config/routes.dart';
+import 'package:auth_app/providers/network_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,11 +19,13 @@ void main() async {
   runApp(ProviderScope(child: const MainApp()));
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends ConsumerWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    
+    
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: routes,

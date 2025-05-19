@@ -1,7 +1,8 @@
-import 'package:auth_app/providers/kanban_provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kanban_board_app/providers/kanban_provider.dart';
 
 class TaskDialog extends ConsumerWidget {
   const TaskDialog({super.key});

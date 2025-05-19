@@ -1,10 +1,9 @@
-import 'package:auth_app/interfaces/task_interface.dart';
-import 'package:auth_app/providers/kanban_provider.dart';
-import 'package:auth_app/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kanban_board_app/interfaces/task_interface.dart';
+import 'package:kanban_board_app/providers/kanban_provider.dart';
+import 'package:kanban_board_app/widgets/custom_button.dart';
 import 'package:go_router/go_router.dart';
-
 class TaskDetailScreen extends ConsumerStatefulWidget {
   final Task task;
 
@@ -129,7 +128,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                 _isEdit
                     ? CustomButton(
                       text: 'Actualizar',
-                      onPressed: () async {
+ onPressed: () async {
                         await ref
                             .read(boardProvider.notifier)
                             .updateTask(

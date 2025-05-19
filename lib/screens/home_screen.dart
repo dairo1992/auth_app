@@ -1,7 +1,3 @@
-import 'package:auth_app/interfaces/task_interface.dart';
-import 'package:auth_app/providers/auth_provider.dart';
-import 'package:auth_app/providers/kanban_provider.dart';
-import 'package:auth_app/widgets/widgets.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boardview/board_item.dart';
@@ -10,6 +6,11 @@ import 'package:flutter_boardview/boardview.dart';
 import 'package:flutter_boardview/boardview_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kanban_board_app/interfaces/task_interface.dart';
+import 'package:kanban_board_app/providers/auth_provider.dart';
+import 'package:kanban_board_app/providers/kanban_provider.dart';
+import 'package:kanban_board_app/widgets/taskCard.dart';
+import 'package:kanban_board_app/widgets/task_dialog.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -93,7 +94,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ];
 
     return Scaffold(
+      backgroundColor: Colors.grey.shade300,
       appBar: AppBar(
+        backgroundColor: Colors.grey.shade300,
         title: Text(
           'Kanban de ${authState.user?.userMetadata?['name']?.toString() ?? 'Usuario'}',
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),

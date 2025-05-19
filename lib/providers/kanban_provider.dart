@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:auth_app/interfaces/offiline_interface.dart';
-import 'package:auth_app/interfaces/task_interface.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kanban_board_app/interfaces/task_interface.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 

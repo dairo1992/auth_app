@@ -1,4 +1,4 @@
-# auth_app
+# KANBAN BOARD APP
 
 App móvil desarrollada con Flutter que implementa un sistema Kanban para la gestión de tareas, con autenticación de usuarios mediante Supabase. Permite a los usuarios registrarse, iniciar sesión, y gestionar sus tareas personales en un tablero Kanban con tres columnas: Por Hacer, En Progreso y Hecho.
 
@@ -23,6 +23,15 @@ Flutter Dotenv (^5.2.1):
 
 Intl (^0.20.2):
     -   Usada para formateo de fechas.
+
+connectivity_plus (^6.1.4):
+    -   Manejo de estado de conexión a internet.
+
+shared_preferences (^2.5.3):
+    -   Almacenamiento de datos persistentes de forma local.
+
+uuid (^4.5.1):
+    -   Generación de identificadores únicos.
 
 # CONFIGURACIÓN DEL PROYECTO
 

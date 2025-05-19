@@ -26,11 +26,11 @@ Intl (^0.20.2):
 
 # CONFIGURACIÓN DEL PROYECTO
 
-Clona este repositorio
-Ejecuta flutter pub get para instalar las dependencias
-Crea un archivo .env en la raíz del proyecto con las siguientes variables:
-SUPABASE_URL=tu_url_de_supabase
-SUPABASE_ANON_KEY=tu_clave_anonima_de_supabase
+1.    Clona este repositorio
+2.    Ejecuta flutter pub get para instalar las dependencias
+3.    Crea un archivo .env en la raíz del proyecto con las siguientes variables:
+4.    SUPABASE_URL=tu_url_de_supabase
+5.    SUPABASE_ANON_KEY=tu_clave_anonima_de_supabase
 
 Ejecuta la aplicación con flutter run
 

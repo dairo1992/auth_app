@@ -3,7 +3,7 @@
 App móvil desarrollada con Flutter que implementa un sistema Kanban para la gestión de tareas, con autenticación de usuarios mediante Supabase. Permite a los usuarios registrarse, iniciar sesión, y gestionar sus tareas personales en un tablero Kanban con tres columnas: Por Hacer, En Progreso y Hecho.
 
 
-TECNOLOGÍAS USADAS:
+# TECNOLOGÍAS USADAS:
 
 Supabase (^2.9.0): 
     -   Encargada de almacenar los datos de forma persistente en la nube.
@@ -24,7 +24,7 @@ Flutter Dotenv (^5.2.1):
 Intl (^0.20.2):
     -   Usada para formateo de fechas.
 
-CONFIGURACIÓN DEL PROYECTO
+# CONFIGURACIÓN DEL PROYECTO
 
 Clona este repositorio
 Ejecuta flutter pub get para instalar las dependencias
@@ -34,7 +34,7 @@ SUPABASE_ANON_KEY=tu_clave_anonima_de_supabase
 
 Ejecuta la aplicación con flutter run
 
-ESTRUCTURA DE LA BASE DE DATOS
+# ESTRUCTURA DE LA BASE DE DATOS
 
 La aplicación utiliza una tabla tasks en Supabase con la siguiente estructura:
 

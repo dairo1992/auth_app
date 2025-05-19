@@ -8,7 +8,7 @@ class TaskDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     final TextEditingController titleController = TextEditingController();
     final TextEditingController descriptionController = TextEditingController();
     final boardState = ref.watch(boardProvider);
@@ -17,7 +17,7 @@ class TaskDialog extends ConsumerWidget {
       content: SizedBox(
         width: MediaQuery.of(context).size.width * 0.5,
         child: Form(
-          key: _formKey,
+          key: formKey,
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,

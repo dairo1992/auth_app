@@ -2,7 +2,6 @@ import 'package:auth_app/interfaces/task_interface.dart';
 import 'package:auth_app/providers/kanban_provider.dart';
 import 'package:auth_app/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TaskDetailScreen extends ConsumerStatefulWidget {

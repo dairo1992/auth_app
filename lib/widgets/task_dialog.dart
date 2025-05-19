@@ -29,45 +29,43 @@ class TaskDialog extends ConsumerWidget {
         title: Text('Nueva Tarea'),
         content: Form(
           key: formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                TextFormField(
-                  controller: titleController,
-                  decoration: const InputDecoration(
-                    labelText: 'Título',
-                    hintText: 'Título de la tarea',
-                    border: OutlineInputBorder(),
-                  ),
-                  autofocus: true,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'El título no puede estar vacío.';
-                    }
-                    return null;
-                  },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextFormField(
+                controller: titleController,
+                decoration: const InputDecoration(
+                  labelText: 'Título',
+                  hintText: 'Título de la tarea',
+                  border: OutlineInputBorder(),
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Descripción (Opcional)',
-                    hintText: 'Descripción detallada...',
-                    border: OutlineInputBorder(),
-                    alignLabelWithHint: true,
-                  ),
-                  maxLines: 3,
-                  textInputAction: TextInputAction.done,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Este campo no puede estar vacío.';
-                    }
-                    return null;
-                  },
+                autofocus: true,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'El título no puede estar vacío.';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Descripción (Opcional)',
+                  hintText: 'Descripción detallada...',
+                  border: OutlineInputBorder(),
+                  alignLabelWithHint: true,
                 ),
-              ],
-            ),
+                maxLines: 3,
+                textInputAction: TextInputAction.done,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Este campo no puede estar vacío.';
+                  }
+                  return null;
+                },
+              ),
+            ],
           ),
         ),
         actions: <Widget>[

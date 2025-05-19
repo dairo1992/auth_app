@@ -10,9 +10,7 @@ class LoginScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final connectivity = ref.watch(connectivityProvider);
     return Scaffold(
-      appBar: AppBar(title: Text('status: ${connectivity.isConnected}')),
       body: Center(
         child: SingleChildScrollView(
           child: SafeArea(

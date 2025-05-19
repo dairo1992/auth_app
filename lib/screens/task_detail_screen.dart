@@ -4,6 +4,7 @@ import 'package:kanban_board_app/interfaces/task_interface.dart';
 import 'package:kanban_board_app/providers/kanban_provider.dart';
 import 'package:kanban_board_app/widgets/custom_button.dart';
 import 'package:go_router/go_router.dart';
+
 class TaskDetailScreen extends ConsumerStatefulWidget {
   final Task task;
 
@@ -40,6 +41,18 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final boardState = ref.watch(boardProvider);
+    showMessage(String message, bool ststus) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: ststus ? Colors.green : Colors.red,
+          ),
+        );
+      context.pop();
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.task.title),
@@ -128,8 +141,8 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                 _isEdit
                     ? CustomButton(
                       text: 'Actualizar',
- onPressed: () async {
-                        await ref
+                      onPressed: () async {
+                        final resp = await ref
                             .read(boardProvider.notifier)
                             .updateTask(
                               Task(
@@ -141,22 +154,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                               ),
                             );
 
-                        ScaffoldMessenger.of(context)
-                          ..hideCurrentSnackBar()
-                          ..showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                boardState.errorMessage == null
-                                    ? "Tarea Actualizada"
-                                    : boardState.errorMessage!,
-                              ),
-                              backgroundColor:
-                                  boardState.errorMessage == null
-                                      ? Colors.green
-                                      : Colors.red,
-                            ),
-                          );
-                        context.pop();
+                        showMessage(resp['message'], resp['status']);
                       },
                       isLoading: false,
                     )

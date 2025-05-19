@@ -4,7 +4,6 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kanban_board_app/interfaces/offiline_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kanban_board_app/interfaces/task_interface.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
@@ -122,7 +121,7 @@ class BoardNotifier extends StateNotifier<KanbanState> {
       }
     } catch (e) {
       state = state.copyWith(
-        errorMessage: 'Error cargando datos locales: $e',
+        errorMessage: 'Error cargando datos locales: ${e.toString()}',
         isLoading: false,
       );
     }
@@ -140,7 +139,9 @@ class BoardNotifier extends StateNotifier<KanbanState> {
       );
       await _prefs.setString(_pendingOperationsKey, pendingOpsJson);
     } catch (e) {
-      state = state.copyWith(errorMessage: 'Error guardando datos locales: $e');
+      state = state.copyWith(
+        errorMessage: 'Error guardando datos locales: ${e.toString()}',
+      );
     }
   }
 
@@ -161,13 +162,6 @@ class BoardNotifier extends StateNotifier<KanbanState> {
           },
         )
         .subscribe();
-  }
-
-  @override
-  void dispose() {
-    _connectivitySubscription.cancel();
-    _supabase.channel('custom-all-channel').unsubscribe();
-    super.dispose();
   }
 
   Future<void> fetchTasks() async {
@@ -197,13 +191,16 @@ class BoardNotifier extends StateNotifier<KanbanState> {
       state = state.copyWith(errorMessage: e.message, isLoading: false);
     } catch (e) {
       state = state.copyWith(
-        errorMessage: 'Error obteniendo tareas: $e',
+        errorMessage: 'Error obteniendo tareas: ${e.toString()}',
         isLoading: false,
       );
     }
   }
 
-  Future<void> addTask(String title, String? description) async {
+  Future<Map<String, dynamic>> addTask(
+    String title,
+    String? description,
+  ) async {
     state = state.copyWith(isLoading: true);
 
     final String tempId = _uuid.v4();
@@ -242,6 +239,8 @@ class BoardNotifier extends StateNotifier<KanbanState> {
           isLoading: false,
           errorMessage: null,
         );
+        await _saveLocalData();
+        return {"status": true, "message": "Tarea guardada con éxito"};
       } catch (e) {
         _addPendingOperation(PendingOperationType.add, {
           'tempId': tempId,
@@ -255,6 +254,12 @@ class BoardNotifier extends StateNotifier<KanbanState> {
           errorMessage:
               'Tarea guardada localmente. Se sincronizará cuando haya conexión.',
         );
+        await _saveLocalData();
+        return {
+          "status": true,
+          "message":
+              "Tarea guardada localmente. Se sincronizará cuando haya conexión.",
+        };
       }
     } else {
       _addPendingOperation(PendingOperationType.add, {
@@ -269,12 +274,16 @@ class BoardNotifier extends StateNotifier<KanbanState> {
         errorMessage:
             'Tarea guardada localmente. Se sincronizará cuando haya conexión.',
       );
+      await _saveLocalData();
+      return {
+        "status": true,
+        "message":
+            "Tarea guardada localmente. Se sincronizará cuando haya conexión.",
+      };
     }
-
-    await _saveLocalData();
   }
 
-  Future<void> updateTask(Task taskToUpdate) async {
+  Future<Map<String, dynamic>> updateTask(Task taskToUpdate) async {
     state = state.copyWith(isLoading: true);
 
     final taskUpdate = taskToUpdate.copyWith(updatedAt: DateTime.now());
@@ -300,6 +309,8 @@ class BoardNotifier extends StateNotifier<KanbanState> {
           isLoading: false,
           errorMessage: null,
         );
+        await _saveLocalData();
+        return {"status": true, "message": "Tarea actualizada con éxito"};
       } catch (e) {
         _addPendingOperation(PendingOperationType.update, {
           'id': taskToUpdate.id,
@@ -307,13 +318,18 @@ class BoardNotifier extends StateNotifier<KanbanState> {
           'description': taskToUpdate.description,
           'status': taskToUpdate.status.name,
         });
-
         state = state.copyWith(
           tasks: tasksList,
           isLoading: false,
           errorMessage:
               'Tarea actualizada localmente. Se sincronizará cuando haya conexión.',
         );
+        await _saveLocalData();
+        return {
+          "status": true,
+          "message":
+              "Tarea actualizada localmente. Se sincronizará cuando haya conexión.",
+        };
       }
     } else {
       _addPendingOperation(PendingOperationType.update, {
@@ -329,9 +345,13 @@ class BoardNotifier extends StateNotifier<KanbanState> {
         errorMessage:
             'Tarea actualizada localmente. Se sincronizará cuando haya conexión.',
       );
+      await _saveLocalData();
+      return {
+        "status": true,
+        "message":
+            "Tarea actualizada localmente. Se sincronizará cuando haya conexión.",
+      };
     }
-
-    await _saveLocalData();
   }
 
   Future<void> updateTaskStatus(String taskId, TaskStatus newStatus) async {
@@ -560,6 +580,13 @@ class BoardNotifier extends StateNotifier<KanbanState> {
       case TaskStatus.done:
         return 'Hecho';
     }
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    _supabase.channel('custom-all-channel').unsubscribe();
+    super.dispose();
   }
 }
 

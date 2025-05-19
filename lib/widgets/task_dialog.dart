@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -12,7 +11,19 @@ class TaskDialog extends ConsumerWidget {
     final formKey = GlobalKey<FormState>();
     final TextEditingController titleController = TextEditingController();
     final TextEditingController descriptionController = TextEditingController();
-    final boardState = ref.watch(boardProvider);
+
+    showMessage(String message, bool ststus) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: ststus ? Colors.green : Colors.red,
+          ),
+        );
+      context.pop();
+    }
+
     return AlertDialog(
       title: Text('Nueva Tarea'),
       content: Form(
@@ -66,26 +77,10 @@ class TaskDialog extends ConsumerWidget {
         ElevatedButton(
           onPressed: () async {
             if (formKey.currentState!.validate()) {
-              await ref
+              final resp = await ref
                   .read(boardProvider.notifier)
                   .addTask(titleController.text, descriptionController.text);
-
-              ScaffoldMessenger.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      boardState.errorMessage == null
-                          ? "Tarea Registrada"
-                          : boardState.errorMessage!,
-                    ),
-                    backgroundColor:
-                        boardState.errorMessage == null
-                            ? Colors.green
-                            : Colors.red,
-                  ),
-                );
-              context.pop();
+              showMessage(resp['message'], resp['status']);
             }
           },
           child: Text('Crear Tarea'),

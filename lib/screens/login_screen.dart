@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,12 +5,14 @@ import 'package:kanban_board_app/providers/auth_provider.dart';
 import 'package:kanban_board_app/widgets/custom_button.dart';
 import 'package:kanban_board_app/widgets/custom_textField.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final connectivity = ref.watch(connectivityProvider);
     return Scaffold(
+      appBar: AppBar(title: Text('status: ${connectivity.isConnected}')),
       body: Center(
         child: SingleChildScrollView(
           child: SafeArea(

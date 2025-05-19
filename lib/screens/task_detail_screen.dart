@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kanban_board_app/interfaces/task_interface.dart';
 import 'package:kanban_board_app/providers/kanban_provider.dart';
 import 'package:kanban_board_app/widgets/custom_button.dart';
-
+import 'package:go_router/go_router.dart';
 class TaskDetailScreen extends ConsumerStatefulWidget {
   final Task task;
 
@@ -17,7 +17,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
   late final TextEditingController _titleController;
   late final TextEditingController _descriptionController;
   final _formKey = GlobalKey<FormState>();
-  late TaskStatus _selectedStatus;
+  late TaskStatus selectedStatus;
   bool _isEdit = false;
 
   @override
@@ -27,7 +27,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
     _descriptionController = TextEditingController(
       text: widget.task.description,
     );
-    _selectedStatus = TaskStatus.pending;
+    selectedStatus = TaskStatus.pending;
   }
 
   @override
@@ -39,6 +39,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final boardState = ref.watch(boardProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.task.title),
@@ -118,7 +119,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                           : (TaskStatus? newValue) {
                             if (newValue != null) {
                               setState(() {
-                                _selectedStatus = newValue;
+                                selectedStatus = newValue;
                               });
                             }
                           },
@@ -127,7 +128,36 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                 _isEdit
                     ? CustomButton(
                       text: 'Actualizar',
-                      onPressed: () {},
+ onPressed: () async {
+                        await ref
+                            .read(boardProvider.notifier)
+                            .updateTask(
+                              Task(
+                                id: widget.task.id,
+                                title: _titleController.text,
+                                description: _descriptionController.text,
+                                userId: widget.task.userId,
+                                status: selectedStatus,
+                              ),
+                            );
+
+                        ScaffoldMessenger.of(context)
+                          ..hideCurrentSnackBar()
+                          ..showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                boardState.errorMessage == null
+                                    ? "Tarea Actualizada"
+                                    : boardState.errorMessage!,
+                              ),
+                              backgroundColor:
+                                  boardState.errorMessage == null
+                                      ? Colors.green
+                                      : Colors.red,
+                            ),
+                          );
+                        context.pop();
+                      },
                       isLoading: false,
                     )
                     : SizedBox(),

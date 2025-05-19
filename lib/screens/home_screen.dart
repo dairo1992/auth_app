@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boardview/board_item.dart';
 import 'package:flutter_boardview/board_list.dart';
@@ -37,10 +38,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
     final authState = ref.watch(authProvider);
     final boardState = ref.watch(boardProvider);
-
+    
     final todoTasks =
         boardState.tasks.where((t) => t.status == TaskStatus.pending).toList();
     final inProgressTasks =
@@ -102,6 +102,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
         ),
         centerTitle: true,
+        leading: Icon(
+          Icons.wifi_1_bar_rounded,
+          color: boardState.isOnline ? Colors.green : Colors.red,
+          size: 30,
+        ),
         actions: [
           if (boardState.isLoading)
             const Padding(

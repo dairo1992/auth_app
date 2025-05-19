@@ -148,7 +148,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                             SnackBar(
                               content: Text(
                                 boardState.errorMessage == null
-                                    ? "Tarea Registrada"
+                                    ? "Tarea Actualizada"
                                     : boardState.errorMessage!,
                               ),
                               backgroundColor:
